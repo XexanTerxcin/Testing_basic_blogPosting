@@ -7,12 +7,12 @@
 // ============================================================
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB2iA6p1G5Z8q3wQ4rT7yU9iK3jL2mN5oP6Q",
-  authDomain: "your-project-id.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project-id.appspot.com",
-  messagingSenderId: "123456789012",
-  appId: "1:123456789012:web:abcdef1234567890"
+  apiKey: "AIzaSyCwAA6exYSVleLqhdBnfSuxJ5aq373ywRk",
+  authDomain: "my-blog-58113.firebaseapp.com",
+  projectId: "my-blog-58113",
+  storageBucket: "my-blog-58113.firebasestorage.app",
+  messagingSenderId: "1052463297922",
+  appId: "1:1052463297922:web:d56643a36da7c092708b9b"
 };
 
 // Initialize Firebase (only once)
