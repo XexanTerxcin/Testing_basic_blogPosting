@@ -23,3 +23,6 @@ firebase.initializeApp(firebaseConfig);
 // Optional: export db and auth for use in other scripts
 // (but we also initialize them in each HTML file for clarity)
 console.log('✅ firebase-config.js loaded');
+
+
+
