@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🔐 Admin · blog</title>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+      background: #f6f9fc; padding: 2rem 1rem; color: #1e293b;
+      max-width: 800px; margin: 0 auto;
+    }
+    .card {
+      background: white; border-radius: 24px; padding: 1.8rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.03); border: 1px solid #e9edf2;
+      margin-bottom: 2rem;
+    }
+    .flex-row {
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      align-items: center; justify-content: space-between;
+    }
+    input, textarea, button {
+      font: inherit; border: 1px solid #dbe0e7; border-radius: 16px;
+      padding: 0.65rem 1rem; background: white; width: 100%;
+      transition: 0.2s;
+    }
+    input:focus, textarea:focus {
+      outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+    }
+    textarea { resize: vertical; min-height: 100px; }
+    button {
+      background: #1e293b; color: white; font-weight: 500;
+      border: none; cursor: pointer; width: auto;
+      padding: 0.65rem 1.8rem; border-radius: 40px;
+    }
+    button:hover { background: #0f172a; transform: scale(0.97); }
+    .btn-outline {
+      background: transparent; color: #1e293b; border: 1px solid #dbe0e7;
+    }
+    .btn-outline:hover { background: #f1f5f9; transform: none; }
+    .admin-area { background: #f1f5f9; border-radius: 20px; padding: 1.5rem; margin-top: 1rem; }
+    .form-group { margin-bottom: 1rem; }
+    #authStatus { font-size: 0.9rem; padding: 0.3rem 0.8rem; background: #e9edf2; border-radius: 30px; }
+    .hidden { display: none !important; }
+    .warning { background: #fef9e7; border: 1px solid #f5d742; border-radius: 16px; padding: 1rem; margin: 1rem 0; }
+    .back-link { display: inline-block; margin-top: 1rem; color: #3b82f6; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <div class="flex-row" style="margin-bottom: 1rem;">
+    <h1>🔐 admin <span class="admin-badge" style="background:#1e293b;color:white;font-size:0.75rem;padding:0.2rem 0.8rem;border-radius:30px;">dashboard</span></h1>
+    <div id="authStatus">⏳ checking ...</div>
+  </div>
+
+  <!-- LOGIN CARD (visible when logged out) -->
+  <div id="loginCard" class="card">
+    <h2>👋 login to manage posts</h2>
+    <div style="margin-top: 1rem;">
+      <input type="email" id="loginEmail" placeholder="admin email" style="margin-bottom: 0.8rem;" />
+      <input type="password" id="loginPassword" placeholder="password" style="margin-bottom: 0.8rem;" />
+      <button id="loginBtn">🔑 login</button>
+      <div id="loginError" style="color:#b91c1c; margin-top: 0.5rem;"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL (visible when logged in) -->
+  <div id="adminPanel" class="card hidden">
+    <div class="flex-row">
+      <h2>✏️ publish new post</h2>
+      <button id="logoutBtn" class="btn-outline" style="padding: 0.4rem 1.2rem;">🚪 logout</button>
+    </div>
+    <div class="admin-area">
+      <div class="form-group">
+        <label style="font-weight: 500; display: block; margin-bottom: 0.3rem;">📌 title</label>
+        <input type="text" id="postTitle" placeholder="blog title" />
+      </div>
+      <div class="form-group">
+        <label style="font-weight: 500; display: block; margin-bottom: 0.3rem;">✍️ content</label>
+        <textarea id="postContent" placeholder="write your blog content ..."></textarea>
+      </div>
+      <button id="publishBtn">🚀 publish post</button>
+      <div id="publishStatus" style="margin-top: 0.6rem; font-size: 0.9rem;"></div>
+    </div>
+    <div style="margin-top: 0.8rem;">
+      <button id="deleteAllBtn" class="btn-outline" style="color: #b91c1c; border-color: #fecaca;">🗑️ delete all posts</button>
+    </div>
+    <a href="index.html" class="back-link">← back to public blog</a>
+  </div>
+
+  <script>
+    // ========== FIREBASE CONFIG (REPLACE WITH YOUR OWN) ==========
+    const firebaseConfig = {
+      apiKey: "AIzaSyB2iA6p1G5Z8q3wQ4rT7yU9iK3jL2mN5oP6Q",
+      authDomain: "your-project-id.firebaseapp.com",
+      projectId: "your-project-id",
+      storageBucket: "your-project-id.appspot.com",
+      messagingSenderId: "123456789012",
+      appId: "1:123456789012:web:abcdef1234567890"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // DOM refs
+    const authStatus = document.getElementById('authStatus');
+    const loginCard = document.getElementById('loginCard');
+    const adminPanel = document.getElementById('adminPanel');
+    const loginEmail = document.getElementById('loginEmail');
+    const loginPassword = document.getElementById('loginPassword');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginError = document.getElementById('loginError');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const postTitle = document.getElementById('postTitle');
+    const postContent = document.getElementById('postContent');
+    const publishBtn = document.getElementById('publishBtn');
+    const deleteAllBtn = document.getElementById('deleteAllBtn');
+    const publishStatus = document.getElementById('publishStatus');
+
+    // ========== AUTH STATE ==========
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        authStatus.textContent = `✅ logged in as ${user.email}`;
+        loginCard.classList.add('hidden');
+        adminPanel.classList.remove('hidden');
+        loginError.textContent = '';
+      } else {
+        authStatus.textContent = '🔒 not logged in';
+        loginCard.classList.remove('hidden');
+        adminPanel.classList.add('hidden');
+        publishStatus.textContent = '';
+      }
+    });
+
+    // ========== LOGIN ==========
+    loginBtn.addEventListener('click', async () => {
+      const email = loginEmail.value.trim();
+      const password = loginPassword.value.trim();
+      if (!email || !password) {
+        loginError.textContent = '⚠️ please enter email and password.';
+        return;
+      }
+      loginError.textContent = '⏳ logging in ...';
+      loginBtn.disabled = true;
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        loginError.textContent = '✅ success!';
+        loginEmail.value = '';
+        loginPassword.value = '';
+      } catch (err) {
+        loginError.textContent = '❌ ' + err.message;
+      }
+      loginBtn.disabled = false;
+    });
+
+    // ========== LOGOUT ==========
+    logoutBtn.addEventListener('click', () => {
+      auth.signOut();
+      publishStatus.textContent = '';
+    });
+
+    // ========== PUBLISH POST ==========
+    publishBtn.addEventListener('click', async () => {
+      const title = postTitle.value.trim();
+      const content = postContent.value.trim();
+      if (!title || !content) {
+        publishStatus.textContent = '⚠️ please fill in both title and content.';
+        return;
+      }
+      publishStatus.textContent = '⏳ publishing ...';
+      publishBtn.disabled = true;
+      try {
+        await db.collection('posts').add({
+          title: title,
+          content: content,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        postTitle.value = '';
+        postContent.value = '';
+        publishStatus.textContent = '✅ published!';
+      } catch (err) {
+        publishStatus.textContent = '❌ error: ' + err.message;
+      }
+      publishBtn.disabled = false;
+    });
+
+    // ========== DELETE ALL POSTS ==========
+    deleteAllBtn.addEventListener('click', async () => {
+      if (!confirm('⚠️ delete ALL blog posts? this cannot be undone.')) return;
+      deleteAllBtn.disabled = true;
+      try {
+        const snapshot = await db.collection('posts').get();
+        const batch = db.batch();
+        snapshot.docs.forEach(doc => batch.delete(doc.ref));
+        await batch.commit();
+        publishStatus.textContent = '🗑️ all posts deleted.';
+      } catch (err) {
+        publishStatus.textContent = '❌ delete error: ' + err.message;
+      }
+      deleteAllBtn.disabled = false;
+    });
+
+    console.log('🔐 admin.html ready.');
+  </script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📘 Blog · index</title>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+      background: #f6f9fc;
+      padding: 2rem 1rem;
+      color: #1e293b;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    h1 { font-weight: 600; letter-spacing: -0.01em; }
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.8rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 2px 6px rgba(0,20,40,0.04);
+      margin-bottom: 2rem;
+      border: 1px solid #e9edf2;
+    }
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .blog-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      margin-top: 1.2rem;
+    }
+    .blog-item {
+      background: #f8fafc;
+      border-radius: 20px;
+      padding: 1.2rem 1.5rem;
+      border-left: 6px solid #3b82f6;
+    }
+    .blog-item h3 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .blog-item .meta { font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem; }
+    .blog-item p { color: #334155; line-height: 1.5; word-wrap: break-word; }
+    .admin-badge {
+      background: #1e293b; color: white; font-size: 0.75rem;
+      padding: 0.2rem 0.8rem; border-radius: 30px; display: inline-block;
+      margin-left: 0.5rem;
+    }
+    button {
+      background: #1e293b; color: white; font-weight: 500;
+      border: none; cursor: pointer; padding: 0.65rem 1.8rem;
+      border-radius: 40px; transition: 0.2s;
+    }
+    button:hover { background: #0f172a; transform: scale(0.97); }
+    .btn-outline {
+      background: transparent; color: #1e293b; border: 1px solid #dbe0e7;
+    }
+    .btn-outline:hover { background: #f1f5f9; transform: none; }
+    #authStatus { font-size: 0.9rem; padding: 0.3rem 0.8rem; background: #e9edf2; border-radius: 30px; }
+    .hidden { display: none !important; }
+    #readmeSection {
+      background: #f1f5f9; padding: 1.5rem; border-radius: 24px;
+      white-space: pre-wrap; font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.85rem; line-height: 1.6; overflow-x: auto;
+    }
+    hr { border: none; border-top: 2px dashed #e2e8f0; margin: 1.8rem 0; }
+  </style>
+</head>
+<body>
+
+  <div class="flex-row" style="margin-bottom: 1rem;">
+    <h1>📘 blog <span class="admin-badge">public</span></h1>
+    <div id="authStatus">🔒 not logged in</div>
+  </div>
+
+  <!-- PUBLIC BLOG LIST -->
+  <div class="card">
+    <h2>📰 all posts</h2>
+    <div id="blogList" class="blog-list">
+      <p style="color: #64748b;">loading posts ...</p>
+    </div>
+  </div>
+
+  <!-- quick admin link -->
+  <div style="text-align: right; margin-top: -0.5rem;">
+    <a href="admin.html" style="color: #3b82f6; text-decoration: none; font-weight: 500;">⚙️ go to admin panel →</a>
+  </div>
+
+  <hr />
+  <h2>📖 README – setup guide</h2>
+  <div id="readmeSection"></div>
+
+  <script>
+    // ========== FIREBASE CONFIG (REPLACE WITH YOUR OWN) ==========
+    const firebaseConfig = {
+      apiKey: "AIzaSyB2iA6p1G5Z8q3wQ4rT7yU9iK3jL2mN5oP6Q",
+      authDomain: "your-project-id.firebaseapp.com",
+      projectId: "your-project-id",
+      storageBucket: "your-project-id.appspot.com",
+      messagingSenderId: "123456789012",
+      appId: "1:123456789012:web:abcdef1234567890"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    const blogListEl = document.getElementById('blogList');
+    const authStatus = document.getElementById('authStatus');
+    const readmeSection = document.getElementById('readmeSection');
+
+    // ========== README CONTENT ==========
+    const readmeText = `# 📘 Basic Blog + Admin (Firebase)
+
+## 🚀 Deploy on GitHub Pages
+1. Create a new public repo on GitHub.
+2. Upload ALL files: index.html, admin.html, firebase-config.js, README.md.
+3. Go to Settings > Pages, select "main" branch, save.
+4. Your site will be live at: https://YOUR-USERNAME.github.io/REPO-NAME
+
+## 🔥 Firebase setup (no prior knowledge needed)
+1. Go to https://console.firebase.google.com/
+2. Click "Add project" → name it → disable Google Analytics.
+3. In the left menu, click "Firestore Database" → "Create database" → start in test mode (yes, allow all).
+4. In the left menu, click "Authentication" → "Get started" → "Email/Password" → enable it.
+5. In the left menu, click "Project settings" (gear icon) → "Your apps" → add a web app (</> icon).
+6. Register app (nickname: "blog") → copy the firebaseConfig object.
+7. PASTE that config into the firebaseConfig variable in:
+   - index.html (around line 70)
+   - admin.html (around line 70)
+   - firebase-config.js (optional, but used in both pages)
+8. Go to Firestore Database → "Rules" tab → set rules to:
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       match /{document=**} {
+         allow read, write: if true;
+       }
+     }
+   }
+   (this allows full access for demo; you can restrict later)
+
+## 🔐 Create admin user
+1. In Firebase Console → Authentication → "Add user" (email/password).
+2. Use this email & password to login on the admin page.
+
+## ✨ How to use
+- Open index.html → public blog feed.
+- Go to admin.html → login with admin credentials.
+- Publish new posts, delete all posts.
+- All changes appear instantly on index.html.
+
+## 📁 Files
+- index.html       → public blog view
+- admin.html       → admin dashboard (login required)
+- firebase-config.js → shared config (optional, but recommended)
+- README.md        → this file
+
+Made with ❤️ + Firebase.`;
+
+    // ========== RENDER BLOGS ==========
+    function renderBlogs(snapshot) {
+      const docs = snapshot.docs;
+      if (docs.length === 0) {
+        blogListEl.innerHTML = `<p style="color: #64748b;">✨ no posts yet. be the first!</p>`;
+        return;
+      }
+      let html = '';
+      docs.forEach(doc => {
+        const data = doc.data();
+        const date = data.createdAt?.toDate?.()?.toLocaleString() || 'just now';
+        html += `
+          <div class="blog-item">
+            <h3>${escapeHtml(data.title) || 'untitled'}</h3>
+            <div class="meta">📅 ${date}</div>
+            <p>${escapeHtml(data.content) || ''}</p>
+          </div>
+        `;
+      });
+      blogListEl.innerHTML = html;
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ========== LISTEN TO POSTS (REALTIME) ==========
+    let unsubscribePosts = null;
+
+    function subscribePosts() {
+      if (unsubscribePosts) unsubscribePosts();
+      unsubscribePosts = db.collection('posts')
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(snapshot => {
+          renderBlogs(snapshot);
+        }, error => {
+          console.error('Firestore error:', error);
+          blogListEl.innerHTML = `<p style="color: #b91c1c;">⚠️ error loading posts: ${error.message}</p>`;
+        });
+    }
+
+    // ========== AUTH STATE (show login status) ==========
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        authStatus.textContent = `✅ logged in as ${user.email}`;
+      } else {
+        authStatus.innerHTML = `🔒 not logged in · <a href="admin.html" style="color:#3b82f6;text-decoration:none;">login</a>`;
+      }
+    });
+
+    // ========== LOAD README ==========
+    readmeSection.textContent = readmeText;
+
+    // ========== START ==========
+    subscribePosts();
+    console.log('📘 index.html ready.');
+  </script>
+</body>
+</html>
