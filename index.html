@@ -1,124 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>📘 Blog · index</title>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+<!DOCTYPE html>                                      <!-- Tells the browser to use modern HTML5 rules. -->
+<html lang="en">                                    <!-- Starts the page and declares English as its language. -->
+<head>                                               <!-- Contains settings and resources that are not page content. -->
+  <meta charset="UTF-8" />                          <!-- Allows the page to display text and emoji correctly. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Makes the layout adapt to phones. -->
+  <title>📘 Blog · index</title>                    <!-- Sets the text shown in the browser tab. -->
+  <!-- Firebase SDKs -->                              <!-- Loads the Firebase libraries used by this page. -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script> <!-- Loads Firebase core. -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script> <!-- Loads the database API. -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script> <!-- Loads the sign-in API. -->
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-      background: #f6f9fc;
-      padding: 2rem 1rem;
-      color: #1e293b;
-      max-width: 1000px;
-      margin: 0 auto;
+    * { box-sizing: border-box; margin: 0; padding: 0; } /* Uses predictable sizing and removes browser defaults. */
+    body { /* Styles the page's main canvas. */
+      font-family: system-ui, 'Segoe UI', Roboto, sans-serif; /* Chooses a readable system font. */
+      background: #f6f9fc; /* Gives the page a pale background. */
+      padding: 2rem 1rem; /* Adds space around the content. */
+      color: #1e293b; /* Sets the default text color. */
+      max-width: 1000px; /* Prevents very wide lines on large screens. */
+      margin: 0 auto; /* Centers the page horizontally. */
     }
-    h1 { font-weight: 600; letter-spacing: -0.01em; }
-    .card {
-      background: white;
-      border-radius: 24px;
-      padding: 1.8rem;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 2px 6px rgba(0,20,40,0.04);
-      margin-bottom: 2rem;
-      border: 1px solid #e9edf2;
+    h1 { font-weight: 600; letter-spacing: -0.01em; } /* Makes the main heading prominent. */
+    .card { /* Styles the main white content panel. */
+      background: white; /* Makes the panel stand out from the page. */
+      border-radius: 24px; /* Rounds the panel corners. */
+      padding: 1.8rem; /* Adds inner space around panel content. */
+      box-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 2px 6px rgba(0,20,40,0.04); /* Adds a subtle shadow. */
+      margin-bottom: 2rem; /* Separates this panel from the next section. */
+      border: 1px solid #e9edf2; /* Adds a soft panel boundary. */
     }
-    .flex-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      align-items: center;
-      justify-content: space-between;
+    .flex-row { /* Places header items in a flexible row. */
+      display: flex; /* Enables flexbox layout. */
+      flex-wrap: wrap; /* Allows items to move to another line on small screens. */
+      gap: 1rem; /* Adds space between flex items. */
+      align-items: center; /* Vertically centers the items. */
+      justify-content: space-between; /* Pushes the first and last items apart. */
     }
-    .blog-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-      margin-top: 1.2rem;
+    .blog-list { /* Controls the stack of posts. */
+      display: flex; /* Enables flexbox for the list. */
+      flex-direction: column; /* Stacks posts vertically. */
+      gap: 1.2rem; /* Adds space between posts. */
+      margin-top: 1.2rem; /* Separates posts from the section heading. */
     }
-    .blog-item {
-      background: #f8fafc;
-      border-radius: 20px;
-      padding: 1.2rem 1.5rem;
-      border-left: 6px solid #3b82f6;
+    .blog-item { /* Styles one rendered blog post. */
+      background: #f8fafc; /* Gives each post a lightly contrasting background. */
+      border-radius: 20px; /* Rounds each post's corners. */
+      padding: 1.2rem 1.5rem; /* Adds space inside each post. */
+      border-left: 6px solid #3b82f6; /* Marks each post with a blue accent. */
     }
-    .blog-item h3 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.25rem; }
-    .blog-item .meta { font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem; }
-    .blog-item p { color: #334155; line-height: 1.5; word-wrap: break-word; }
-    .admin-badge {
-      background: #1e293b; color: white; font-size: 0.75rem;
-      padding: 0.2rem 0.8rem; border-radius: 30px; display: inline-block;
-      margin-left: 0.5rem;
+    .blog-item h3 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.25rem; } /* Formats post titles. */
+    .blog-item .meta { font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem; } /* Formats post dates. */
+    .blog-item p { color: #334155; line-height: 1.5; word-wrap: break-word; } /* Formats post content. */
+    .admin-badge { /* Styles the small page-purpose badge. */
+      background: #1e293b; color: white; font-size: 0.75rem; /* Sets badge colors and text size. */
+      padding: 0.2rem 0.8rem; border-radius: 30px; display: inline-block; /* Shapes and aligns the badge. */
+      margin-left: 0.5rem; /* Separates the badge from the heading. */
     }
-    button {
-      background: #1e293b; color: white; font-weight: 500;
-      border: none; cursor: pointer; padding: 0.65rem 1.8rem;
-      border-radius: 40px; transition: 0.2s;
+    button { /* Gives buttons a shared appearance. */
+      background: #1e293b; color: white; font-weight: 500; /* Sets button colors and weight. */
+      border: none; cursor: pointer; padding: 0.65rem 1.8rem; /* Removes the border and sizes the control. */
+      border-radius: 40px; transition: 0.2s; /* Rounds buttons and smooths hover changes. */
     }
-    button:hover { background: #0f172a; transform: scale(0.97); }
-    .btn-outline {
-      background: transparent; color: #1e293b; border: 1px solid #dbe0e7;
+    button:hover { background: #0f172a; transform: scale(0.97); } /* Gives buttons feedback on hover. */
+    .btn-outline { /* Defines the alternate outline button style. */
+      background: transparent; color: #1e293b; border: 1px solid #dbe0e7; /* Keeps the alternate button subtle. */
     }
-    .btn-outline:hover { background: #f1f5f9; transform: none; }
-    #authStatus { font-size: 0.9rem; padding: 0.3rem 0.8rem; background: #e9edf2; border-radius: 30px; }
-    .hidden { display: none !important; }
-    #readmeSection {
-      background: #f1f5f9; padding: 1.5rem; border-radius: 24px;
-      white-space: pre-wrap; font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 0.85rem; line-height: 1.6; overflow-x: auto;
+    .btn-outline:hover { background: #f1f5f9; transform: none; } /* Highlights outline buttons without shrinking them. */
+    #authStatus { font-size: 0.9rem; padding: 0.3rem 0.8rem; background: #e9edf2; border-radius: 30px; } /* Styles auth status. */
+    .hidden { display: none !important; } /* Provides a reusable class for hiding elements. */
+    #readmeSection { /* Styles the setup guide displayed at the bottom. */
+      background: #f1f5f9; padding: 1.5rem; border-radius: 24px; /* Adds spacing and rounded corners. */
+      white-space: pre-wrap; font-family: 'SF Mono', 'Fira Code', monospace; /* Preserves README line breaks. */
+      font-size: 0.85rem; line-height: 1.6; overflow-x: auto; /* Makes long setup lines readable. */
     }
-    hr { border: none; border-top: 2px dashed #e2e8f0; margin: 1.8rem 0; }
+    hr { border: none; border-top: 2px dashed #e2e8f0; margin: 1.8rem 0; } /* Separates the blog from the guide. */
   </style>
-</head>
-<body>
+</head>                                                <!-- Ends the page settings section. -->
+<body>                                                 <!-- Starts the visible page content. -->
 
-  <div class="flex-row" style="margin-bottom: 1rem;">
-    <h1>📘 blog <span class="admin-badge">public</span></h1>
-    <div id="authStatus">🔒 not logged in</div>
-  </div>
+  <div class="flex-row" style="margin-bottom: 1rem;"> <!-- Holds the title and authentication status. -->
+    <h1>📘 blog <span class="admin-badge">public</span></h1> <!-- Shows the public blog title and badge. -->
+    <div id="authStatus">🔒 not logged in</div>       <!-- Displays the current Firebase sign-in state. -->
+  </div>                                                <!-- Ends the page header. -->
 
-  <!-- PUBLIC BLOG LIST -->
-  <div class="card">
-    <h2>📰 all posts</h2>
-    <div id="blogList" class="blog-list">
-      <p style="color: #64748b;">loading posts ...</p>
-    </div>
-  </div>
+  <!-- PUBLIC BLOG LIST -->                         <!-- Labels the main public content area. -->
+  <div class="card">                                <!-- Creates the white post panel. -->
+    <h2>📰 all posts</h2>                             <!-- Names the post list. -->
+    <div id="blogList" class="blog-list">         <!-- Receives post markup generated by JavaScript. -->
+      <p style="color: #64748b;">loading posts ...</p> <!-- Appears while Firestore is loading. -->
+    </div>                                           <!-- Ends the dynamic post container. -->
+  </div>                                             <!-- Ends the post panel. -->
 
-  <!-- quick admin link -->
-  <div style="text-align: right; margin-top: -0.5rem;">
-    <a href="admin.html" style="color: #3b82f6; text-decoration: none; font-weight: 500;">⚙️ go to admin panel →</a>
-  </div>
+  <!-- quick admin link -->                         <!-- Labels the link to the private dashboard. -->
+  <div style="text-align: right; margin-top: -0.5rem;"> <!-- Aligns the admin link to the right. -->
+    <a href="admin.html" style="color: #3b82f6; text-decoration: none; font-weight: 500;">⚙️ go to admin panel →</a> <!-- Opens admin.html. -->
+  </div>                                           <!-- Ends the admin-link area. -->
 
-  <hr />
-  <h2>📖 README – setup guide</h2>
-  <div id="readmeSection"></div>
+  <hr />                                             <!-- Visually separates the two page sections. -->
+  <h2>📖 README – setup guide</h2>                  <!-- Labels the setup instructions. -->
+  <div id="readmeSection"></div>                   <!-- Receives the README text from JavaScript. -->
 
-  <script>
-    // ========== FIREBASE CONFIG (REPLACE WITH YOUR OWN) ==========
-// ========== FIREBASE CONFIG (REPLACE WITH YOUR OWN) ==========
-const firebaseConfig = {
-  apiKey: "AIzaSyCwAA6exYSVleLqhdBnfSuxJ5aq373ywRk",
-  authDomain: "my-blog-58113.firebaseapp.com",
-  projectId: "my-blog-58113",
-  storageBucket: "my-blog-58113.firebasestorage.app",
-  messagingSenderId: "1052463297922",
-  appId: "1:1052463297922:web:d56643a36da7c092708b9b"
-};
+  <script>                                           <!-- Starts the page's JavaScript logic. -->
+    // ========== FIREBASE CONFIG (REPLACE WITH YOUR OWN) ========== // Marks the configuration section.
+// ========== FIREBASE CONFIG (REPLACE WITH YOUR OWN) ==========     // Repeats the section marker from the original file.
+const firebaseConfig = {                                // Stores the Firebase project settings.
+  apiKey: "AIzaSyCwAA6exYSVleLqhdBnfSuxJ5aq373ywRk",   // Identifies this browser application publicly.
+  authDomain: "my-blog-58113.firebaseapp.com",          // Provides the Firebase authentication domain.
+  projectId: "my-blog-58113",                           // Selects the Firestore project.
+  storageBucket: "my-blog-58113.firebasestorage.app",  // Identifies the project's storage bucket.
+  messagingSenderId: "1052463297922",                  // Identifies the Firebase messaging sender.
+  appId: "1:1052463297922:web:d56643a36da7c092708b9b"  // Identifies this registered web app.
+};                                                       // Finishes the Firebase settings object.
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
+    firebase.initializeApp(firebaseConfig);              // Connects this page to the Firebase project.
+    const db = firebase.firestore();                     // Creates a handle for reading the posts collection.
+    const auth = firebase.auth();                        // Creates a handle for observing sign-in state.
 
-    const blogListEl = document.getElementById('blogList');
-    const authStatus = document.getElementById('authStatus');
-    const readmeSection = document.getElementById('readmeSection');
+    const blogListEl = document.getElementById('blogList');       // Finds the element where posts will be rendered.
+    const authStatus = document.getElementById('authStatus');    // Finds the element that shows sign-in status.
+    const readmeSection = document.getElementById('readmeSection'); // Finds the element for the setup guide.
 
-    // ========== README CONTENT ==========
+    // ========== README CONTENT ==========                 // Marks the embedded setup-guide section.
     const readmeText = `# 📘 Basic Blog + Admin (Firebase)
 
 ## 🚀 Deploy on GitHub Pages
@@ -167,17 +167,18 @@ const firebaseConfig = {
 
 Made with ❤️ + Firebase.`;
 
-    // ========== RENDER BLOGS ==========
-    function renderBlogs(snapshot) {
-      const docs = snapshot.docs;
-      if (docs.length === 0) {
-        blogListEl.innerHTML = `<p style="color: #64748b;">✨ no posts yet. be the first!</p>`;
-        return;
-      }
-      let html = '';
-      docs.forEach(doc => {
-        const data = doc.data();
-        const date = data.createdAt?.toDate?.()?.toLocaleString() || 'just now';
+    // ========== RENDER BLOGS ==========                    // Marks the function that turns database data into HTML.
+    function renderBlogs(snapshot) {                        // Receives one Firestore result snapshot.
+      const docs = snapshot.docs;                            // Extracts the individual post documents.
+      if (docs.length === 0) {                               // Checks whether the database returned no posts.
+        blogListEl.innerHTML = `<p style="color: #64748b;">✨ no posts yet. be the first!</p>`; // Shows the empty state.
+        return;                                              // Stops because there is nothing else to render.
+      }                                                       // Ends the empty-result check.
+      let html = '';                                          // Starts an empty string for the generated markup.
+      docs.forEach(doc => {                                   // Processes every post document in order.
+        const data = doc.data();                              // Converts a Firestore document into a normal object.
+        const date = data.createdAt?.toDate?.()?.toLocaleString() || 'just now'; // Formats its timestamp safely.
+        // The template below creates one visible post card.  // This explains the following multiline string.
         html += `
           <div class="blog-item">
             <h3>${escapeHtml(data.title) || 'untitled'}</h3>
@@ -185,47 +186,47 @@ Made with ❤️ + Firebase.`;
             <p>${escapeHtml(data.content) || ''}</p>
           </div>
         `;
-      });
-      blogListEl.innerHTML = html;
-    }
+      });                                                    // Finishes processing all returned documents.
+      blogListEl.innerHTML = html;                           // Replaces the loading content with the post list.
+    }                                                         // Ends the post-rendering function.
 
-    function escapeHtml(text) {
-      if (!text) return '';
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
+    function escapeHtml(text) {                              // Converts user text into safe HTML text.
+      if (!text) return '';                                   // Returns empty text for missing values.
+      const div = document.createElement('div');              // Creates a temporary browser element.
+      div.textContent = text;                                 // Lets the browser escape HTML characters safely.
+      return div.innerHTML;                                   // Reads the escaped result back as a string.
+    }                                                         // Ends the HTML-escaping helper.
 
-    // ========== LISTEN TO POSTS (REALTIME) ==========
-    let unsubscribePosts = null;
+    // ========== LISTEN TO POSTS (REALTIME) ==========       // Marks the realtime database listener section.
+    let unsubscribePosts = null;                             // Stores the function that can stop the current listener.
 
-    function subscribePosts() {
-      if (unsubscribePosts) unsubscribePosts();
-      unsubscribePosts = db.collection('posts')
-        .orderBy('createdAt', 'desc')
-        .onSnapshot(snapshot => {
-          renderBlogs(snapshot);
-        }, error => {
-          console.error('Firestore error:', error);
-          blogListEl.innerHTML = `<p style="color: #b91c1c;">⚠️ error loading posts: ${error.message}</p>`;
-        });
-    }
+    function subscribePosts() {                              // Starts listening for changes in the posts collection.
+      if (unsubscribePosts) unsubscribePosts();               // Stops an older listener before creating a new one.
+      unsubscribePosts = db.collection('posts')             // Selects the Firestore collection named posts.
+        .orderBy('createdAt', 'desc')                         // Sorts newest posts before older posts.
+        .onSnapshot(snapshot => {                             // Runs whenever Firestore sends fresh data.
+          renderBlogs(snapshot);                              // Renders the latest snapshot into the page.
+        }, error => {                                         // Defines what happens when the listener fails.
+          console.error('Firestore error:', error);           // Logs technical error details for debugging.
+          blogListEl.innerHTML = `<p style="color: #b91c1c;">⚠️ error loading posts: ${error.message}</p>`; // Shows a user-facing error.
+        });                                                   // Finishes the realtime listener registration.
+    }                                                         // Ends the subscription function.
 
-    // ========== AUTH STATE (show login status) ==========
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        authStatus.textContent = `✅ logged in as ${user.email}`;
-      } else {
-        authStatus.innerHTML = `🔒 not logged in · <a href="admin.html" style="color:#3b82f6;text-decoration:none;">login</a>`;
-      }
-    });
+    // ========== AUTH STATE (show login status) ==========    // Marks the public auth-status section.
+    auth.onAuthStateChanged(user => {                         // Runs whenever the Firebase user changes.
+      if (user) {                                              // Checks whether a user is signed in.
+        authStatus.textContent = `✅ logged in as ${user.email}`; // Displays the signed-in email as plain text.
+      } else {                                                 // Handles the signed-out state.
+        authStatus.innerHTML = `🔒 not logged in · <a href="admin.html" style="color:#3b82f6;text-decoration:none;">login</a>`; // Offers a login link.
+      }                                                      // Ends the signed-in check.
+    });                                                       // Registers the auth-state listener.
 
-    // ========== LOAD README ==========
-    readmeSection.textContent = readmeText;
+    // ========== LOAD README ==========                       // Marks the setup-guide loading section.
+    readmeSection.textContent = readmeText;                   // Displays the template string without interpreting it as HTML.
 
-    // ========== START ==========
-    subscribePosts();
-    console.log('📘 index.html ready.');
-  </script>
-</body>
-</html>
+    // ========== START ==========                             // Marks the startup section.
+    subscribePosts();                                         // Begins loading and watching blog posts.
+    console.log('📘 index.html ready.');                      // Confirms initialization in browser developer tools.
+  </script>                                                   <!-- Ends the page JavaScript. -->
+</body>                                                        <!-- Ends the visible page content. -->
+</html>                                                       <!-- Ends the HTML document. -->

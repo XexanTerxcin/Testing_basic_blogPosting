@@ -1,213 +1,213 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🔐 Admin · blog</title>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+<!DOCTYPE html>                                      <!-- Declares the document as modern HTML5. -->
+<html lang="en">                                    <!-- Starts the page and declares English text. -->
+<head>                                               <!-- Holds metadata, libraries, and styles. -->
+  <meta charset="UTF-8" />                          <!-- Enables normal text and emoji display. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Makes the page responsive. -->
+  <title>🔐 Admin · blog</title>                    <!-- Sets the browser-tab title. -->
+  <!-- Firebase SDKs -->                              <!-- Marks the external Firebase libraries. -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script> <!-- Loads Firebase core. -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script> <!-- Loads Firestore. -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script> <!-- Loads Firebase Auth. -->
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-      background: #f6f9fc; padding: 2rem 1rem; color: #1e293b;
-      max-width: 800px; margin: 0 auto;
+    * { box-sizing: border-box; margin: 0; padding: 0; } /* Normalizes sizing and browser spacing. */
+    body { /* Styles the administration page canvas. */
+      font-family: system-ui, 'Segoe UI', Roboto, sans-serif; /* Chooses a readable system font. */
+      background: #f6f9fc; padding: 2rem 1rem; color: #1e293b; /* Sets page background, spacing, and text color. */
+      max-width: 800px; margin: 0 auto; /* Limits line length and centers the page. */
     }
-    .card {
-      background: white; border-radius: 24px; padding: 1.8rem;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.03); border: 1px solid #e9edf2;
-      margin-bottom: 2rem;
+    .card { /* Styles the login and dashboard panels. */
+      background: white; border-radius: 24px; padding: 1.8rem; /* Gives panels a white, rounded, padded surface. */
+      box-shadow: 0 8px 20px rgba(0,0,0,0.03); border: 1px solid #e9edf2; /* Adds gentle depth and a boundary. */
+      margin-bottom: 2rem; /* Separates stacked panels. */
     }
-    .flex-row {
-      display: flex; flex-wrap: wrap; gap: 1rem;
-      align-items: center; justify-content: space-between;
+    .flex-row { /* Arranges heading controls in a flexible row. */
+      display: flex; flex-wrap: wrap; gap: 1rem; /* Enables wrapping with consistent spacing. */
+      align-items: center; justify-content: space-between; /* Centers items and pushes them apart. */
     }
-    input, textarea, button {
-      font: inherit; border: 1px solid #dbe0e7; border-radius: 16px;
-      padding: 0.65rem 1rem; background: white; width: 100%;
-      transition: 0.2s;
+    input, textarea, button { /* Gives form controls shared dimensions. */
+      font: inherit; border: 1px solid #dbe0e7; border-radius: 16px; /* Matches controls to the page typography. */
+      padding: 0.65rem 1rem; background: white; width: 100%; /* Makes fields fill their available width. */
+      transition: 0.2s; /* Smooths focus and hover changes. */
     }
-    input:focus, textarea:focus {
-      outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+    input:focus, textarea:focus { /* Highlights the field currently being edited. */
+      outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); /* Shows keyboard focus clearly. */
     }
-    textarea { resize: vertical; min-height: 100px; }
-    button {
-      background: #1e293b; color: white; font-weight: 500;
-      border: none; cursor: pointer; width: auto;
-      padding: 0.65rem 1.8rem; border-radius: 40px;
+    textarea { resize: vertical; min-height: 100px; } /* Allows vertical resizing while preserving a useful minimum. */
+    button { /* Defines the main button appearance. */
+      background: #1e293b; color: white; font-weight: 500; /* Uses a dark background and readable text. */
+      border: none; cursor: pointer; width: auto; /* Removes the field width rule for buttons. */
+      padding: 0.65rem 1.8rem; border-radius: 40px; /* Adds comfortable button spacing and rounded corners. */
     }
-    button:hover { background: #0f172a; transform: scale(0.97); }
-    .btn-outline {
-      background: transparent; color: #1e293b; border: 1px solid #dbe0e7;
+    button:hover { background: #0f172a; transform: scale(0.97); } /* Provides hover feedback. */
+    .btn-outline { /* Defines the secondary button style. */
+      background: transparent; color: #1e293b; border: 1px solid #dbe0e7; /* Keeps the secondary action light. */
     }
-    .btn-outline:hover { background: #f1f5f9; transform: none; }
-    .admin-area { background: #f1f5f9; border-radius: 20px; padding: 1.5rem; margin-top: 1rem; }
-    .form-group { margin-bottom: 1rem; }
-    #authStatus { font-size: 0.9rem; padding: 0.3rem 0.8rem; background: #e9edf2; border-radius: 30px; }
-    .hidden { display: none !important; }
-    .warning { background: #fef9e7; border: 1px solid #f5d742; border-radius: 16px; padding: 1rem; margin: 1rem 0; }
-    .back-link { display: inline-block; margin-top: 1rem; color: #3b82f6; text-decoration: none; }
+    .btn-outline:hover { background: #f1f5f9; transform: none; } /* Highlights without changing its size. */
+    .admin-area { background: #f1f5f9; border-radius: 20px; padding: 1.5rem; margin-top: 1rem; } /* Frames the editor. */
+    .form-group { margin-bottom: 1rem; } /* Separates title and content fields. */
+    #authStatus { font-size: 0.9rem; padding: 0.3rem 0.8rem; background: #e9edf2; border-radius: 30px; } /* Styles auth state. */
+    .hidden { display: none !important; } /* Hides panels that do not apply to the current auth state. */
+    .warning { background: #fef9e7; border: 1px solid #f5d742; border-radius: 16px; padding: 1rem; margin: 1rem 0; } /* Defines warning styling. */
+    .back-link { display: inline-block; margin-top: 1rem; color: #3b82f6; text-decoration: none; } /* Styles the public-blog link. */
   </style>
-</head>
-<body>
+</head>                                                <!-- Ends metadata and styles. -->
+<body>                                                 <!-- Starts the visible admin page. -->
 
-  <div class="flex-row" style="margin-bottom: 1rem;">
-    <h1>🔐 admin <span class="admin-badge" style="background:#1e293b;color:white;font-size:0.75rem;padding:0.2rem 0.8rem;border-radius:30px;">dashboard</span></h1>
-    <div id="authStatus">⏳ checking ...</div>
-  </div>
+  <div class="flex-row" style="margin-bottom: 1rem;"> <!-- Holds the admin heading and current auth state. -->
+    <h1>🔐 admin <span class="admin-badge" style="background:#1e293b;color:white;font-size:0.75rem;padding:0.2rem 0.8rem;border-radius:30px;">dashboard</span></h1> <!-- Identifies this private page. -->
+    <div id="authStatus">⏳ checking ...</div>       <!-- Starts with a temporary auth-check message. -->
+  </div>                                              <!-- Ends the page header. -->
 
-  <!-- LOGIN CARD (visible when logged out) -->
-  <div id="loginCard" class="card">
-    <h2>👋 login to manage posts</h2>
-    <div style="margin-top: 1rem;">
-      <input type="email" id="loginEmail" placeholder="admin email" style="margin-bottom: 0.8rem;" />
-      <input type="password" id="loginPassword" placeholder="password" style="margin-bottom: 0.8rem;" />
-      <button id="loginBtn">🔑 login</button>
-      <div id="loginError" style="color:#b91c1c; margin-top: 0.5rem;"></div>
-    </div>
-  </div>
+  <!-- LOGIN CARD (visible when logged out) -->       <!-- Explains when this panel is displayed. -->
+  <div id="loginCard" class="card">                <!-- Contains the email/password sign-in form. -->
+    <h2>👋 login to manage posts</h2>                 <!-- Labels the sign-in form. -->
+    <div style="margin-top: 1rem;">                 <!-- Adds space above the fields. -->
+      <input type="email" id="loginEmail" placeholder="admin email" style="margin-bottom: 0.8rem;" /> <!-- Collects the account email. -->
+      <input type="password" id="loginPassword" placeholder="password" style="margin-bottom: 0.8rem;" /> <!-- Collects the secret password. -->
+      <button id="loginBtn">🔑 login</button>       <!-- Starts the sign-in request when clicked. -->
+      <div id="loginError" style="color:#b91c1c; margin-top: 0.5rem;"></div> <!-- Receives validation or login errors. -->
+    </div>                                              <!-- Ends the login form content. -->
+  </div>                                                <!-- Ends the login panel. -->
 
-  <!-- ADMIN PANEL (visible when logged in) -->
-  <div id="adminPanel" class="card hidden">
-    <div class="flex-row">
-      <h2>✏️ publish new post</h2>
-      <button id="logoutBtn" class="btn-outline" style="padding: 0.4rem 1.2rem;">🚪 logout</button>
-    </div>
-    <div class="admin-area">
-      <div class="form-group">
-        <label style="font-weight: 500; display: block; margin-bottom: 0.3rem;">📌 title</label>
-        <input type="text" id="postTitle" placeholder="blog title" />
-      </div>
-      <div class="form-group">
-        <label style="font-weight: 500; display: block; margin-bottom: 0.3rem;">✍️ content</label>
-        <textarea id="postContent" placeholder="write your blog content ..."></textarea>
-      </div>
-      <button id="publishBtn">🚀 publish post</button>
-      <div id="publishStatus" style="margin-top: 0.6rem; font-size: 0.9rem;"></div>
-    </div>
-    <div style="margin-top: 0.8rem;">
-      <button id="deleteAllBtn" class="btn-outline" style="color: #b91c1c; border-color: #fecaca;">🗑️ delete all posts</button>
-    </div>
-    <a href="index.html" class="back-link">← back to public blog</a>
-  </div>
+  <!-- ADMIN PANEL (visible when logged in) -->          <!-- Explains when this panel is displayed. -->
+  <div id="adminPanel" class="card hidden">          <!-- Holds actions available to authenticated users. -->
+    <div class="flex-row">                              <!-- Places the heading and logout button together. -->
+      <h2>✏️ publish new post</h2>                       <!-- Labels the editor. -->
+      <button id="logoutBtn" class="btn-outline" style="padding: 0.4rem 1.2rem;">🚪 logout</button> <!-- Signs out the user. -->
+    </div>                                                <!-- Ends the admin heading row. -->
+    <div class="admin-area">                            <!-- Groups the publishing controls visually. -->
+      <div class="form-group">                          <!-- Groups the title label and field. -->
+        <label style="font-weight: 500; display: block; margin-bottom: 0.3rem;">📌 title</label> <!-- Names the title field. -->
+        <input type="text" id="postTitle" placeholder="blog title" /> <!-- Collects the post title. -->
+      </div>                                              <!-- Ends the title group. -->
+      <div class="form-group">                          <!-- Groups the content label and field. -->
+        <label style="font-weight: 500; display: block; margin-bottom: 0.3rem;">✍️ content</label> <!-- Names the content field. -->
+        <textarea id="postContent" placeholder="write your blog content ..."></textarea> <!-- Collects the post body. -->
+      </div>                                              <!-- Ends the content group. -->
+      <button id="publishBtn">🚀 publish post</button>  <!-- Starts saving a new post. -->
+      <div id="publishStatus" style="margin-top: 0.6rem; font-size: 0.9rem;"></div> <!-- Shows publish progress or errors. -->
+    </div>                                                <!-- Ends the publishing controls. -->
+    <div style="margin-top: 0.8rem;">                   <!-- Adds space before the destructive action. -->
+      <button id="deleteAllBtn" class="btn-outline" style="color: #b91c1c; border-color: #fecaca;">🗑️ delete all posts</button> <!-- Starts deleting every post. -->
+    </div>                                                <!-- Ends the delete-action area. -->
+    <a href="index.html" class="back-link">← back to public blog</a> <!-- Returns to the public page. -->
+  </div>                                                  <!-- Ends the admin panel. -->
 
-  <script>
-    // ========== FIREBASE CONFIG (REPLACE WITH YOUR OWN) ==========
-// ========== FIREBASE CONFIG (REPLACE WITH YOUR OWN) ==========
-const firebaseConfig = {
-  apiKey: "AIzaSyCwAA6exYSVleLqhdBnfSuxJ5aq373ywRk",
-  authDomain: "my-blog-58113.firebaseapp.com",
-  projectId: "my-blog-58113",
-  storageBucket: "my-blog-58113.firebasestorage.app",
-  messagingSenderId: "1052463297922",
-  appId: "1:1052463297922:web:d56643a36da7c092708b9b"
-};
+  <script>                                           <!-- Starts the admin page JavaScript. -->
+    // ========== FIREBASE CONFIG (REPLACE WITH YOUR OWN) ========== // Marks the Firebase settings section.
+// ========== FIREBASE CONFIG (REPLACE WITH YOUR OWN) ==========     // Repeats the original section marker.
+const firebaseConfig = {                                // Stores the Firebase project settings.
+  apiKey: "AIzaSyCwAA6exYSVleLqhdBnfSuxJ5aq373ywRk",   // Identifies this browser application publicly.
+  authDomain: "my-blog-58113.firebaseapp.com",          // Provides the authentication domain.
+  projectId: "my-blog-58113",                           // Selects the Firestore project.
+  storageBucket: "my-blog-58113.firebasestorage.app",  // Identifies the storage bucket.
+  messagingSenderId: "1052463297922",                  // Identifies the Firebase messaging sender.
+  appId: "1:1052463297922:web:d56643a36da7c092708b9b"  // Identifies the registered web app.
+};                                                       // Finishes the Firebase settings object.
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
+    firebase.initializeApp(firebaseConfig);              // Connects this page to Firebase.
+    const db = firebase.firestore();                     // Creates the Firestore database handle.
+    const auth = firebase.auth();                        // Creates the authentication handle.
 
-    // DOM refs
-    const authStatus = document.getElementById('authStatus');
-    const loginCard = document.getElementById('loginCard');
-    const adminPanel = document.getElementById('adminPanel');
-    const loginEmail = document.getElementById('loginEmail');
-    const loginPassword = document.getElementById('loginPassword');
-    const loginBtn = document.getElementById('loginBtn');
-    const loginError = document.getElementById('loginError');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const postTitle = document.getElementById('postTitle');
-    const postContent = document.getElementById('postContent');
-    const publishBtn = document.getElementById('publishBtn');
-    const deleteAllBtn = document.getElementById('deleteAllBtn');
-    const publishStatus = document.getElementById('publishStatus');
+    // DOM refs                                             // Marks the section that connects code to HTML elements.
+    const authStatus = document.getElementById('authStatus'); // Finds the auth status display.
+    const loginCard = document.getElementById('loginCard');   // Finds the login panel.
+    const adminPanel = document.getElementById('adminPanel'); // Finds the authenticated panel.
+    const loginEmail = document.getElementById('loginEmail'); // Finds the email input.
+    const loginPassword = document.getElementById('loginPassword'); // Finds the password input.
+    const loginBtn = document.getElementById('loginBtn');     // Finds the login button.
+    const loginError = document.getElementById('loginError'); // Finds the login message area.
+    const logoutBtn = document.getElementById('logoutBtn');   // Finds the logout button.
+    const postTitle = document.getElementById('postTitle');   // Finds the title input.
+    const postContent = document.getElementById('postContent'); // Finds the content textarea.
+    const publishBtn = document.getElementById('publishBtn'); // Finds the publish button.
+    const deleteAllBtn = document.getElementById('deleteAllBtn'); // Finds the delete-all button.
+    const publishStatus = document.getElementById('publishStatus'); // Finds the publishing message area.
 
-    // ========== AUTH STATE ==========
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        authStatus.textContent = `✅ logged in as ${user.email}`;
-        loginCard.classList.add('hidden');
-        adminPanel.classList.remove('hidden');
-        loginError.textContent = '';
-      } else {
-        authStatus.textContent = '🔒 not logged in';
-        loginCard.classList.remove('hidden');
-        adminPanel.classList.add('hidden');
-        publishStatus.textContent = '';
-      }
-    });
+    // ========== AUTH STATE ==========                       // Marks the sign-in state section.
+    auth.onAuthStateChanged(user => {                         // Runs after Firebase determines the current user.
+      if (user) {                                              // Checks whether authentication succeeded.
+        authStatus.textContent = `✅ logged in as ${user.email}`; // Shows the signed-in email.
+        loginCard.classList.add('hidden');                     // Hides the login form.
+        adminPanel.classList.remove('hidden');                 // Shows the publishing tools.
+        loginError.textContent = '';                           // Clears old login messages.
+      } else {                                                 // Handles a signed-out visitor.
+        authStatus.textContent = '🔒 not logged in';            // Shows the signed-out status.
+        loginCard.classList.remove('hidden');                  // Shows the login form.
+        adminPanel.classList.add('hidden');                    // Hides protected tools.
+        publishStatus.textContent = '';                        // Clears old publishing messages.
+      }                                                        // Ends the signed-in check.
+    });                                                        // Registers the auth-state listener.
 
-    // ========== LOGIN ==========
-    loginBtn.addEventListener('click', async () => {
-      const email = loginEmail.value.trim();
-      const password = loginPassword.value.trim();
-      if (!email || !password) {
-        loginError.textContent = '⚠️ please enter email and password.';
-        return;
-      }
-      loginError.textContent = '⏳ logging in ...';
-      loginBtn.disabled = true;
-      try {
-        await auth.signInWithEmailAndPassword(email, password);
-        loginError.textContent = '✅ success!';
-        loginEmail.value = '';
-        loginPassword.value = '';
-      } catch (err) {
-        loginError.textContent = '❌ ' + err.message;
-      }
-      loginBtn.disabled = false;
-    });
+    // ========== LOGIN ==========                            // Marks the login action section.
+    loginBtn.addEventListener('click', async () => {          // Runs when the login button is clicked.
+      const email = loginEmail.value.trim();                  // Reads and trims the email input.
+      const password = loginPassword.value.trim();            // Reads and trims the password input.
+      if (!email || !password) {                              // Checks that both values were entered.
+        loginError.textContent = '⚠️ please enter email and password.'; // Explains the missing fields.
+        return;                                                // Stops before calling Firebase.
+      }                                                       // Ends the validation check.
+      loginError.textContent = '⏳ logging in ...';             // Shows progress to the user.
+      loginBtn.disabled = true;                                // Prevents duplicate login requests.
+      try {                                                     // Starts the operation that may fail.
+        await auth.signInWithEmailAndPassword(email, password); // Sends credentials to Firebase Auth.
+        loginError.textContent = '✅ success!';                 // Shows a success message briefly.
+        loginEmail.value = '';                                  // Clears the email field.
+        loginPassword.value = '';                               // Clears the password field.
+      } catch (err) {                                           // Handles rejected credentials or network errors.
+        loginError.textContent = '❌ ' + err.message;            // Displays the Firebase error message.
+      }                                                         // Ends the login attempt.
+      loginBtn.disabled = false;                                // Re-enables the button after completion.
+    });                                                         // Finishes the click handler.
 
-    // ========== LOGOUT ==========
-    logoutBtn.addEventListener('click', () => {
-      auth.signOut();
-      publishStatus.textContent = '';
-    });
+    // ========== LOGOUT ==========                            // Marks the sign-out action section.
+    logoutBtn.addEventListener('click', () => {               // Runs when the logout button is clicked.
+      auth.signOut();                                          // Asks Firebase to end the current session.
+      publishStatus.textContent = '';                          // Clears any old publishing message.
+    });                                                        // Finishes the logout handler.
 
-    // ========== PUBLISH POST ==========
-    publishBtn.addEventListener('click', async () => {
-      const title = postTitle.value.trim();
-      const content = postContent.value.trim();
-      if (!title || !content) {
-        publishStatus.textContent = '⚠️ please fill in both title and content.';
-        return;
-      }
-      publishStatus.textContent = '⏳ publishing ...';
-      publishBtn.disabled = true;
-      try {
-        await db.collection('posts').add({
-          title: title,
-          content: content,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        postTitle.value = '';
-        postContent.value = '';
-        publishStatus.textContent = '✅ published!';
-      } catch (err) {
-        publishStatus.textContent = '❌ error: ' + err.message;
-      }
-      publishBtn.disabled = false;
-    });
+    // ========== PUBLISH POST ==========                      // Marks the new-post workflow.
+    publishBtn.addEventListener('click', async () => {          // Runs when publishing is requested.
+      const title = postTitle.value.trim();                    // Reads and trims the post title.
+      const content = postContent.value.trim();                 // Reads and trims the post content.
+      if (!title || !content) {                                 // Checks both required fields.
+        publishStatus.textContent = '⚠️ please fill in both title and content.'; // Explains what is missing.
+        return;                                                 // Stops before writing incomplete data.
+      }                                                        // Ends required-field validation.
+      publishStatus.textContent = '⏳ publishing ...';           // Shows that the save has started.
+      publishBtn.disabled = true;                               // Prevents duplicate writes.
+      try {                                                      // Starts the database operation.
+        await db.collection('posts').add({                      // Creates a new document in the posts collection.
+          title: title,                                         // Stores the title entered by the admin.
+          content: content,                                     // Stores the body entered by the admin.
+          createdAt: firebase.firestore.FieldValue.serverTimestamp() // Lets Firestore assign the official time.
+        });                                                      // Finishes the new document data.
+        postTitle.value = '';                                   // Clears the title after success.
+        postContent.value = '';                                 // Clears the content after success.
+        publishStatus.textContent = '✅ published!';             // Confirms that the post was saved.
+      } catch (err) {                                            // Handles permission, network, or database errors.
+        publishStatus.textContent = '❌ error: ' + err.message;   // Shows the error to the admin.
+      }                                                          // Ends the publish attempt.
+      publishBtn.disabled = false;                              // Re-enables publishing after completion.
+    });                                                          // Finishes the publish click handler.
 
-    // ========== DELETE ALL POSTS ==========
-    deleteAllBtn.addEventListener('click', async () => {
-      if (!confirm('⚠️ delete ALL blog posts? this cannot be undone.')) return;
-      deleteAllBtn.disabled = true;
-      try {
-        const snapshot = await db.collection('posts').get();
-        const batch = db.batch();
-        snapshot.docs.forEach(doc => batch.delete(doc.ref));
-        await batch.commit();
-        publishStatus.textContent = '🗑️ all posts deleted.';
-      } catch (err) {
-        publishStatus.textContent = '❌ delete error: ' + err.message;
-      }
-      deleteAllBtn.disabled = false;
-    });
+    // ========== DELETE ALL POSTS ==========                   // Marks the destructive delete workflow.
+    deleteAllBtn.addEventListener('click', async () => {       // Runs when delete-all is clicked.
+      if (!confirm('⚠️ delete ALL blog posts? this cannot be undone.')) return; // Requires explicit confirmation.
+      deleteAllBtn.disabled = true;                             // Prevents repeated delete requests.
+      try {                                                      // Starts the database deletion operation.
+        const snapshot = await db.collection('posts').get();   // Retrieves every post document.
+        const batch = db.batch();                               // Creates one grouped Firestore write.
+        snapshot.docs.forEach(doc => batch.delete(doc.ref));    // Adds each retrieved document to the batch.
+        await batch.commit();                                   // Sends all queued deletions to Firestore.
+        publishStatus.textContent = '🗑️ all posts deleted.';     // Confirms successful deletion.
+      } catch (err) {                                            // Handles database or permission failures.
+        publishStatus.textContent = '❌ delete error: ' + err.message; // Shows the failure reason.
+      }                                                          // Ends the delete attempt.
+      deleteAllBtn.disabled = false;                            // Re-enables the delete button.
+    });                                                          // Finishes the delete click handler.
 
-    console.log('🔐 admin.html ready.');
-  </script>
-</body>
-</html>
+    console.log('🔐 admin.html ready.');                       // Confirms initialization in developer tools.
+  </script>                                                    <!-- Ends the admin page JavaScript. -->
+</body>                                                         <!-- Ends the visible page. -->
+</html>                                                        <!-- Ends the HTML document. -->
