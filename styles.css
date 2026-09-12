@@ -1,41 +1,40 @@
-
-    * { box-sizing: border-box; margin: 0; padding: 0; } /* Normalizes sizing and browser spacing. */
-    body { /* Styles the administration page canvas. */
-      font-family: system-ui, 'Segoe UI', Roboto, sans-serif; /* Chooses a readable system font. */
-      background: #f6f9fc; padding: 2rem 1rem; color: #1e293b; /* Sets page background, spacing, and text color. */
-      max-width: 800px; margin: 0 auto; /* Limits line length and centers the page. */
-    }
-    .card { /* Styles the login and dashboard panels. */
-      background: white; border-radius: 24px; padding: 1.8rem; /* Gives panels a white, rounded, padded surface. */
-      box-shadow: 0 8px 20px rgba(0,0,0,0.03); border: 1px solid #e9edf2; /* Adds gentle depth and a boundary. */
-      margin-bottom: 2rem; /* Separates stacked panels. */
-    }
-    .flex-row { /* Arranges heading controls in a flexible row. */
-      display: flex; flex-wrap: wrap; gap: 1rem; /* Enables wrapping with consistent spacing. */
-      align-items: center; justify-content: space-between; /* Centers items and pushes them apart. */
-    }
-    input, textarea, button { /* Gives form controls shared dimensions. */
-      font: inherit; border: 1px solid #dbe0e7; border-radius: 16px; /* Matches controls to the page typography. */
-      padding: 0.65rem 1rem; background: white; width: 100%; /* Makes fields fill their available width. */
-      transition: 0.2s; /* Smooths focus and hover changes. */
-    }
-    input:focus, textarea:focus { /* Highlights the field currently being edited. */
-      outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); /* Shows keyboard focus clearly. */
-    }
-    textarea { resize: vertical; min-height: 100px; } /* Allows vertical resizing while preserving a useful minimum. */
-    button { /* Defines the main button appearance. */
-      background: #1e293b; color: white; font-weight: 500; /* Uses a dark background and readable text. */
-      border: none; cursor: pointer; width: auto; /* Removes the field width rule for buttons. */
-      padding: 0.65rem 1.8rem; border-radius: 40px; /* Adds comfortable button spacing and rounded corners. */
-    }
-    button:hover { background: #0f172a; transform: scale(0.97); } /* Provides hover feedback. */
-    .btn-outline { /* Defines the secondary button style. */
-      background: transparent; color: #1e293b; border: 1px solid #dbe0e7; /* Keeps the secondary action light. */
-    }
-    .btn-outline:hover { background: #f1f5f9; transform: none; } /* Highlights without changing its size. */
-    .admin-area { background: #f1f5f9; border-radius: 20px; padding: 1.5rem; margin-top: 1rem; } /* Frames the editor. */
-    .form-group { margin-bottom: 1rem; } /* Separates title and content fields. */
-    #authStatus { font-size: 0.9rem; padding: 0.3rem 0.8rem; background: #e9edf2; border-radius: 30px; } /* Styles auth state. */
-    .hidden { display: none !important; } /* Hides panels that do not apply to the current auth state. */
-    .warning { background: #fef9e7; border: 1px solid #f5d742; border-radius: 16px; padding: 1rem; margin: 1rem 0; } /* Defines warning styling. */
-    .back-link { display: inline-block; margin-top: 1rem; color: #3b82f6; text-decoration: none; } /* Styles the public-blog link. */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  background: #f6f9fc; padding: 2rem 1rem; color: #1e293b;
+  max-width: 800px; margin: 0 auto;
+}
+.card {
+  background: white; border-radius: 24px; padding: 1.8rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.03); border: 1px solid #e9edf2;
+  margin-bottom: 2rem;
+}
+.flex-row {
+  display: flex; flex-wrap: wrap; gap: 1rem;
+  align-items: center; justify-content: space-between;
+}
+input, textarea, button {
+  font: inherit; border: 1px solid #dbe0e7; border-radius: 16px;
+  padding: 0.65rem 1rem; background: white; width: 100%;
+  transition: 0.2s;
+}
+input:focus, textarea:focus {
+  outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+}
+textarea { resize: vertical; min-height: 100px; }
+button {
+  background: #1e293b; color: white; font-weight: 500;
+  border: none; cursor: pointer; width: auto;
+  padding: 0.65rem 1.8rem; border-radius: 40px;
+}
+button:hover { background: #0f172a; transform: scale(0.97); }
+.btn-outline {
+  background: transparent; color: #1e293b; border: 1px solid #dbe0e7;
+}
+.btn-outline:hover { background: #f1f5f9; transform: none; }
+.admin-area { background: #f1f5f9; border-radius: 20px; padding: 1.5rem; margin-top: 1rem; }
+.form-group { margin-bottom: 1rem; }
+#authStatus { font-size: 0.9rem; padding: 0.3rem 0.8rem; background: #e9edf2; border-radius: 30px; }
+.hidden { display: none !important; }
+.warning { background: #fef9e7; border: 1px solid #f5d742; border-radius: 16px; padding: 1rem; margin: 1rem 0; }
+.back-link { display: inline-block; margin-top: 1rem; color: #3b82f6; text-decoration: none; }
