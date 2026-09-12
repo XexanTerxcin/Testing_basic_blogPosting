@@ -8,71 +8,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script> <!-- Loads Firebase core. -->
   <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script> <!-- Loads the database API. -->
   <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script> <!-- Loads the sign-in API. -->
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; } /* Uses predictable sizing and removes browser defaults. */
-    body { /* Styles the page's main canvas. */
-      font-family: system-ui, 'Segoe UI', Roboto, sans-serif; /* Chooses a readable system font. */
-      background: #f6f9fc; /* Gives the page a pale background. */
-      padding: 2rem 1rem; /* Adds space around the content. */
-      color: #1e293b; /* Sets the default text color. */
-      max-width: 1000px; /* Prevents very wide lines on large screens. */
-      margin: 0 auto; /* Centers the page horizontally. */
-    }
-    h1 { font-weight: 600; letter-spacing: -0.01em; } /* Makes the main heading prominent. */
-    .card { /* Styles the main white content panel. */
-      background: white; /* Makes the panel stand out from the page. */
-      border-radius: 24px; /* Rounds the panel corners. */
-      padding: 1.8rem; /* Adds inner space around panel content. */
-      box-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 2px 6px rgba(0,20,40,0.04); /* Adds a subtle shadow. */
-      margin-bottom: 2rem; /* Separates this panel from the next section. */
-      border: 1px solid #e9edf2; /* Adds a soft panel boundary. */
-    }
-    .flex-row { /* Places header items in a flexible row. */
-      display: flex; /* Enables flexbox layout. */
-      flex-wrap: wrap; /* Allows items to move to another line on small screens. */
-      gap: 1rem; /* Adds space between flex items. */
-      align-items: center; /* Vertically centers the items. */
-      justify-content: space-between; /* Pushes the first and last items apart. */
-    }
-    .blog-list { /* Controls the stack of posts. */
-      display: flex; /* Enables flexbox for the list. */
-      flex-direction: column; /* Stacks posts vertically. */
-      gap: 1.2rem; /* Adds space between posts. */
-      margin-top: 1.2rem; /* Separates posts from the section heading. */
-    }
-    .blog-item { /* Styles one rendered blog post. */
-      background: #f8fafc; /* Gives each post a lightly contrasting background. */
-      border-radius: 20px; /* Rounds each post's corners. */
-      padding: 1.2rem 1.5rem; /* Adds space inside each post. */
-      border-left: 6px solid #3b82f6; /* Marks each post with a blue accent. */
-    }
-    .blog-item h3 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.25rem; } /* Formats post titles. */
-    .blog-item .meta { font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem; } /* Formats post dates. */
-    .blog-item p { color: #334155; line-height: 1.5; word-wrap: break-word; } /* Formats post content. */
-    .admin-badge { /* Styles the small page-purpose badge. */
-      background: #1e293b; color: white; font-size: 0.75rem; /* Sets badge colors and text size. */
-      padding: 0.2rem 0.8rem; border-radius: 30px; display: inline-block; /* Shapes and aligns the badge. */
-      margin-left: 0.5rem; /* Separates the badge from the heading. */
-    }
-    button { /* Gives buttons a shared appearance. */
-      background: #1e293b; color: white; font-weight: 500; /* Sets button colors and weight. */
-      border: none; cursor: pointer; padding: 0.65rem 1.8rem; /* Removes the border and sizes the control. */
-      border-radius: 40px; transition: 0.2s; /* Rounds buttons and smooths hover changes. */
-    }
-    button:hover { background: #0f172a; transform: scale(0.97); } /* Gives buttons feedback on hover. */
-    .btn-outline { /* Defines the alternate outline button style. */
-      background: transparent; color: #1e293b; border: 1px solid #dbe0e7; /* Keeps the alternate button subtle. */
-    }
-    .btn-outline:hover { background: #f1f5f9; transform: none; } /* Highlights outline buttons without shrinking them. */
-    #authStatus { font-size: 0.9rem; padding: 0.3rem 0.8rem; background: #e9edf2; border-radius: 30px; } /* Styles auth status. */
-    .hidden { display: none !important; } /* Provides a reusable class for hiding elements. */
-    #readmeSection { /* Styles the setup guide displayed at the bottom. */
-      background: #f1f5f9; padding: 1.5rem; border-radius: 24px; /* Adds spacing and rounded corners. */
-      white-space: pre-wrap; font-family: 'SF Mono', 'Fira Code', monospace; /* Preserves README line breaks. */
-      font-size: 0.85rem; line-height: 1.6; overflow-x: auto; /* Makes long setup lines readable. */
-    }
-    hr { border: none; border-top: 2px dashed #e2e8f0; margin: 1.8rem 0; } /* Separates the blog from the guide. */
-  </style>
+  <link rel="stylesheet" href="style.css" class="css">
+ 
 </head>                                                <!-- Ends the page settings section. -->
 <body>                                                 <!-- Starts the visible page content. -->
 
